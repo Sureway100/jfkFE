@@ -1,6 +1,7 @@
 // MeasurementUpdatePage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { backendUrl } from "../globalContext/constant";
 import { useNavigate, useParams } from "react-router-dom";
 import backgroundImage from "../images/measurement_background_update.webp"; // Adjust the path as necessary
 
@@ -37,7 +38,7 @@ const MeasurementUpdatePage = () => {
       //setUserName(username);
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/users/measurements/view/",
+          `${backendUrl}/api/users/measurements/view/`,
           {
             params: { username },
           }
@@ -77,7 +78,7 @@ const MeasurementUpdatePage = () => {
     //const username = localStorage.getItem("username");
     try {
       setIsSubmitting(true); // Disable form during submission
-      await axios.put("http://localhost:8000/api/users/measurements/update/", {
+      await axios.put(`${backendUrl}/api/users/measurements/update/`, {
         ...userData,
         username,
       });

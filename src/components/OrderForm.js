@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/OrderForm.css";
 import orderFormBackground from "../images/orderform.webp";
+import { backendUrl } from "../globalContext/constant";
 
 const OrderForm = () => {
   const [measurements, setMeasurements] = useState("");
@@ -32,7 +33,7 @@ const OrderForm = () => {
 
   const fetchProfiles = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/users/userprofile");
+      const response = await axios.get(`${backendUrl}/api/users/userprofile`);
       setProfiles(response.data);
     } catch (error) {
       console.error("Error fetching user profiles:", error);
@@ -42,9 +43,12 @@ const OrderForm = () => {
   const fetchMeasurements = async (username) => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8000/api/users/measurements/view/", {
-        params: { username },
-      });
+      const response = await axios.get(
+        `${backendUrl}/api/users/measurements/view/`,
+        {
+          params: { username },
+        }
+      );
       setUserStats(response.data);
     } catch (error) {
       console.error("Error fetching measurements:", error);
@@ -75,21 +79,25 @@ const OrderForm = () => {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const orderresponse = await axios.post("http://localhost:8000/api/users/orders/new/", {
-        measurements,
-        comments,
-        expected_date: expectedDate,
-        event_type: eventType,
-        material,
-        preferred_Color: preferredColor,
-        username: selectedProfile || username,
-        client: selectedProfile || username,
-      });
+      const orderresponse = await axios.post(
+        `${backendUrl}/api/users/orders/new/`,
+        {
+          measurements,
+          comments,
+          expected_date: expectedDate,
+          event_type: eventType,
+          material,
+          preferred_Color: preferredColor,
+          username: selectedProfile || username,
+          client: selectedProfile || username,
+        }
+      );
 
-      
       maildata.message = `
           <p>Dear <strong>${selectedProfile || username} </strong>,</p>
-          <p>Your Order with order number ${orderresponse.data.id} has been successfully booked with JFK Tailor Shop.</p>
+          <p>Your Order with order number ${
+            orderresponse.data.id
+          } has been successfully booked with JFK Tailor Shop.</p>
           <p><strong>Expected Delivery Date:</strong> ${expectedDate}</p>
           <p><strong>Preferred Color:</strong> ${preferredColor}</p>
           <p><strong>Event Type:</strong> ${eventType}</p>
@@ -97,10 +105,10 @@ const OrderForm = () => {
         `;
       maildata.subject = `Your Order (${orderresponse.data.id}) with JFK`;
       maildata.username = orderresponse.data.client;
-      
+
       setMaildata(maildata);
 
-      await axios.post("http://localhost:8000/api/users/notifications/email", maildata);
+      await axios.post(`${backendUrl}/api/users/notifications/email`, maildata);
       setSuccess(true);
       setShowConfirmationModal(false);
       resetForm();
@@ -137,7 +145,10 @@ const OrderForm = () => {
   };
 
   return (
-    <div className="order-form-page" style={{ backgroundImage: `url(${orderFormBackground})` }}>
+    <div
+      className="order-form-page"
+      style={{ backgroundImage: `url(${orderFormBackground})` }}
+    >
       <div className="order-form-container">
         <h2>Place a New Order</h2>
         {error && <p className="error-message">{error}</p>}
@@ -145,8 +156,14 @@ const OrderForm = () => {
         {role === "admin" && (
           <div className="field-group">
             <label>Select Client: </label>
-            <select value={selectedProfile} onChange={handleProfileChange} className="input">
-              <option value="" disabled>Select a Client</option>
+            <select
+              value={selectedProfile}
+              onChange={handleProfileChange}
+              className="input"
+            >
+              <option value="" disabled>
+                Select a Client
+              </option>
               {profiles.map((profile) => (
                 <option key={profile.id} value={profile.username}>
                   {profile.username}
@@ -177,7 +194,7 @@ const OrderForm = () => {
           </table>
         )}
 
-        <form onSubmit={handleConfirmOrder} >
+        <form onSubmit={handleConfirmOrder}>
           <div className="field-group">
             <label>Measurements:</label>
             <textarea
@@ -255,10 +272,17 @@ const OrderForm = () => {
             <div className="modal-content">
               <h3>Confirm Order</h3>
               <p>Are you sure you want to place this order?</p>
-              <button onClick={handleSubmit} className="confirm-button" disabled={submitting}>
+              <button
+                onClick={handleSubmit}
+                className="confirm-button"
+                disabled={submitting}
+              >
                 {submitting ? "Please wait..." : "Submit Order"}
               </button>
-              <button onClick={() => setShowConfirmationModal(false)} className="close-button">
+              <button
+                onClick={() => setShowConfirmationModal(false)}
+                className="close-button"
+              >
                 Cancel
               </button>
             </div>

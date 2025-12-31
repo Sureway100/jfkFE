@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { backendUrl } from "../globalContext/constant";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../images/adminBackgroundUsers.webp"; // Adjust the path as needed
 
@@ -10,9 +11,7 @@ const AdminUserProfileList = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/users/userprofile"
-        );
+        const response = await axios.get(`${backendUrl}/api/users/userprofile`);
         setProfiles(response.data);
       } catch (error) {
         console.error("Error fetching user profiles:", error);
@@ -25,10 +24,8 @@ const AdminUserProfileList = () => {
   const handleDelete = async (username) => {
     if (window.confirm("Are you sure you want to delete this profile?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/users/profile/${username}/`);
-        const response = await axios.get(
-          "http://localhost:8000/api/users/userprofile"
-        );
+        await axios.delete(`${backendUrl}/api/users/profile/${username}/`);
+        const response = await axios.get(`${backendUrl}/api/users/userprofile`);
         setProfiles(response.data);
         // setProfiles(profiles.filter((profile) => profile.username !== username));
       } catch (error) {
@@ -73,28 +70,31 @@ const AdminUserProfileList = () => {
                 </td>
                 <td style={styles.tableCell}>{profile.email}</td>
                 <td style={styles.tableCell}>
-                <div style={styles.actionButtonContainer}>
-                  <button
-                    style={styles.actionButton}
-                    onClick={() => navigate(`/admin/users/view/${profile.username}`)}
-                  >
-                    View
-                  </button>
-                  <button
-                    style={styles.actionButton}
-                    onClick={() => navigate(`/admin/users/edit/${profile.username}`)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    style={{ ...styles.actionButton, ...styles.deleteButton }}
-                    onClick={() => handleDelete(profile.username)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-
+                  <div style={styles.actionButtonContainer}>
+                    <button
+                      style={styles.actionButton}
+                      onClick={() =>
+                        navigate(`/admin/users/view/${profile.username}`)
+                      }
+                    >
+                      View
+                    </button>
+                    <button
+                      style={styles.actionButton}
+                      onClick={() =>
+                        navigate(`/admin/users/edit/${profile.username}`)
+                      }
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={{ ...styles.actionButton, ...styles.deleteButton }}
+                      onClick={() => handleDelete(profile.username)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -124,7 +124,7 @@ const styles = {
     minHeight: "600px",
     width: "100%",
     textAlign: "center",
-    marginTop: "40px",  
+    marginTop: "40px",
     marginBottom: "40px",
   },
   title: {
@@ -197,6 +197,5 @@ const styles = {
     backgroundColor: "#dc3545",
   },
 };
-
 
 export default AdminUserProfileList;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { backendUrl } from "../globalContext/constant";
 import { useNavigate, Navigate } from "react-router-dom";
 import backgroundImage from "../images/adminBackground.webp";
 import "../styles/AdminDashboardAndOrders.css";
@@ -30,7 +31,7 @@ const AdminDashboardAndOrders = () => {
     const fetchMetrics = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/users/admin/dashboard"
+          `${backendUrl}/api/users/admin/dashboard`
         );
         setMetrics(response.data);
         setLoading(false);
@@ -48,7 +49,7 @@ const AdminDashboardAndOrders = () => {
       try {
         //const type = 'all';
         const response = await axios.get(
-          "http://localhost:8000/api/users/admin/orders",
+          `${backendUrl}/api/users/admin/orders`,
           {
             params: { type: "pending" },
           }
@@ -79,10 +80,9 @@ const AdminDashboardAndOrders = () => {
 
   const updateOrderStatus = async (id, status) => {
     try {
-      await axios.put(
-        `http://localhost:8000/api/users/orders/updatestatus/${id}/`,
-        { status }
-      );
+      await axios.put(`${backendUrl}/api/users/orders/updatestatus/${id}/`, {
+        status,
+      });
       setOrders(
         orders.map((order) => (order.id === id ? { ...order, status } : order))
       );
@@ -225,7 +225,7 @@ const AdminDashboardAndOrders = () => {
                       onClick={() => updateOrderStatus(order.id, "fitting")}
                       className="button"
                     >
-                      Mark Ready for Fitting 
+                      Mark Ready for Fitting
                     </button>
                     <button
                       onClick={() => updateOrderStatus(order.id, "Completed")}

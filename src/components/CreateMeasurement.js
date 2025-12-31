@@ -1,6 +1,7 @@
 // CreateMeasurment.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { backendUrl } from "../globalContext/constant";
 import { useNavigate, useParams } from "react-router-dom";
 import image from "../images/createmeasure.webp";
 
@@ -22,7 +23,7 @@ const CreateMeasurment = () => {
     rise: "",
     bodylength: "",
   });
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ const CreateMeasurment = () => {
     e.preventDefault();
     if (!validateForm()) return;
     try {
-      await axios.post("http://localhost:8000/api/users/measurements/new/", userData);
+      await axios.post(`${backendUrl}/api/users/measurements/new/`, userData);
       setSuccessMessage("Measurements saved successfully!");
       setShowPreview(false);
       setUserData({
@@ -94,31 +95,40 @@ const CreateMeasurment = () => {
   };
 
   const handleBackHome = () => {
-    const role = localStorage.getItem("role")
-    if (role==='client'){
+    const role = localStorage.getItem("role");
+    if (role === "client") {
       navigate("/client-home");
     }
 
-    if (role==='admin'){
+    if (role === "admin") {
       navigate("/admin/dashboard");
     }
-    
   };
 
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <button type="button" onClick={handleBackHome} style={styles.backButton}>
+        <button
+          type="button"
+          onClick={handleBackHome}
+          style={styles.backButton}
+        >
           Back Home
         </button>
         <h2 style={styles.heading}>Submit your Measurements for {username}</h2>
         {error && <p style={styles.errorMessage}>{error}</p>}
-        {successMessage && <p style={styles.successMessage}>{successMessage}</p>}
-        <button type="button" onClick={togglePreview} style={styles.previewButton}>
+        {successMessage && (
+          <p style={styles.successMessage}>{successMessage}</p>
+        )}
+        <button
+          type="button"
+          onClick={togglePreview}
+          style={styles.previewButton}
+        >
           {showPreview ? "Hide Preview" : "Show Preview"}
         </button>
         <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.inputGroup}>
+          <div style={styles.inputGroup}>
             <div style={styles.inputWrapper}>
               <label style={styles.label}>Neck:</label>
               <input
@@ -306,19 +316,29 @@ const CreateMeasurment = () => {
               />
             </div>
           </div>
-          
 
-          <button type="submit" style={styles.button}>Save Measurements</button>
+          <button type="submit" style={styles.button}>
+            Save Measurements
+          </button>
         </form>
-        
+
         {showPreview && (
           <div style={styles.modalOverlay}>
             <div style={styles.modal}>
               <h3 style={styles.previewHeading}>Measurement Preview</h3>
-              {Object.keys(userData).map((key) => (
-                key !== "username" && <p key={key}>{key.charAt(0).toUpperCase() + key.slice(1)}: {userData[key]}</p>
-              ))}
-              <button style={styles.modalCloseButton} onClick={closeModal}>Close</button>x
+              {Object.keys(userData).map(
+                (key) =>
+                  key !== "username" && (
+                    <p key={key}>
+                      {key.charAt(0).toUpperCase() + key.slice(1)}:{" "}
+                      {userData[key]}
+                    </p>
+                  )
+              )}
+              <button style={styles.modalCloseButton} onClick={closeModal}>
+                Close
+              </button>
+              x
             </div>
           </div>
         )}
